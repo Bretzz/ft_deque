@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:02:02 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 02:37:16 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 01:50:10 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,67 @@
 
 int	main(void)
 {
-	ft_deque<int>	f;
+	ft_deque<myClass>	f;
+	myClass				c(1);
+	myClass				d(2);
 
-	f.push_back(1);
-	f.push_back(2);
-	f.push_back(3);
-	// f.push_back(4);
-	// f.push_back(5);
+	f.print();
+	std::cout << std::endl;
 
-	std::cout << "front : " << f.front() << ", back : " << f.back() << std::endl;
+	f.push_back(c);
+	f.push_back(d);
+	f.push_back(c);
+	f.push_back(d);
 
-	f.assign(10, -1);
+	f.print();
 
-	std::cout << "at(5) : " << f.at(5) << std::endl;
+	std::cout << f.size() << std::endl;
 
-	std::cout << "expected " << f.size() << " destructors" << std::endl;
+	f.push_back(c);
+	
+	std::cout << f.size() << std::endl;
+	
+	f.pop_back();
+	
+	std::cout << f.size() << std::endl;
+	
+	f.pop_front();
+
+	f.print();
+
+	std::cout << std::endl << "=== 2x push front ===" << std::endl;
+
+	f.push_front(c);
+	f.push_front(d);
+
+	f.print();
+
+	std::cout << std::endl << "=== pop back ===" << std::endl;
+
+	// f.pop_back();
+
+	// f.print();
+	
+	for (size_t i = 0; i < f.size(); ++i)
+	{
+		std::cout << f[(int)i].me() << std::endl;
+	}
+
+	{
+		std::cout << "copy" << std::endl;
+		ft_deque<myClass> g(f);
+	
+		g.print();
+
+		for (size_t i = 0; i < g.size(); ++i)
+		{
+			std::cout << g[(int)i].me() << std::endl;
+		}
+		std::cout << "at(0)" << g.at(0).me() << std::endl;
+	}
+
+
+
+	std::cout << "expected " << f.size() + 2 << " destructors" << std::endl;
 	return 0;
 }

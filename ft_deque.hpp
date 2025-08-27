@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/26 21:11:25 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/08/27 02:45:31 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,58 +20,81 @@
 
 typedef unsigned long uintptr_t;
 
-template <typename T, class _Allocator = std::allocator<T> >
+template <typename T, class Allocator = std::allocator<T> >
 class ft_deque
 {
-	// # define TULL reinterpret_cast<T*>(0)
-
+	public:
+		/* MEMBER TYPES */
+		typedef T										value_type;
+		typedef Allocator								allocator_type;
+		typedef std::size_t								size_type;
+		typedef value_type&								reference;
+		typedef const value_type&						const_reference;
+		typedef typename allocator_type::pointer		pointer;
+		typedef typename allocator_type::const_pointer	const_pointer;
+	
 	private:
-		_Allocator			_alloc;
+		allocator_type		_alloc;
 		T*					_back;
-		T*					_front;	
+		T*					_front;
 
 	protected:
-		// T*					_base;
 		std::vector<T *>	_base;
 		size_t				_size;
 
 	public:
 		ft_deque();
-		ft_deque(const ft_deque<T, _Allocator>&);
-		// ft_deque(const std::stack<T, std::deque<T, _Allocator> >&);
-		ft_deque<T, _Allocator>& operator=(const ft_deque<T, _Allocator>&);
+		ft_deque(const ft_deque<T, Allocator>&);
 		~ft_deque();
 
-		/* METHODS */
-		size_t	size(void) const;
-		void	push_back(const T&);
-		void	pop_back(void);
-		void	push_front(const T&);
-		void	pop_front(void);
+		/* === METHODS === */
+		void					assign(size_type, const T&);
+		// void					assign(InputIt, InputIt);
+		ft_deque<T, Allocator>&	operator=(const ft_deque<T, Allocator>&);
+		allocator_type			get_allocator() const {return _alloc;}
 
-		/* OVERLOADS */
+		/* MEMORY ADDRESS DEBUG */
+		void	print(void) const;
+
+		/* Element access */
+		const T&	at(int __idx) const {return (*this)[__idx];}
+		T&			back(void);
+		T&			front(void);
+
+		/* Capacity */
+		bool		empty(void) const {return __size != 0 ? true : false;}
+		size_type	size(void) const {return _size;}
+
+		/* Modifiers */
+		void		clear(void);
+		// iterator insert( const_iterator pos, const T& value );
+		// iterator erase( iterator pos );
+		void		push_back(const T&);
+		void		pop_back(void);
+		void		push_front(const T&);
+		void		pop_front(void);
+
+		/* === OPERATORS === */
 		T&			operator[](int);
 		const T&	operator[](int) const;
 	
-		/* ITERATOR */
+		/* === ITERATOR === */
 		// class iterator
 		// {
 		// 	private:
-		// 		T*					_ptr;
-		// 		std::vector<T*>		_base;
+		// 		T					*_ptr;
+		// 		std::vector<T*>		*_base;
 
 		// 	public:
 
 		// 	/* RAW */
-		// 	T*					base(void) const;
-		// 	std::map<T*, T*>*	getJumps(void);
-		// 	std::map<T*, T*>*	getrJumps(void);
+		// 	T*	base(void) const;
 
 		// 	/* CONSTRUCTOR */
 		// 	iterator();
 		// 	iterator(const iterator&);
 		// 	~iterator();
-		// 	// iterator(const typename std::deque<T, _Allocator>::iterator&);
+		// 	// iterator(const typename std::deque<T, Allocator>::iterator&);
 		// 	// iterator(T*, std::map<T*, T*>*, std::map<T*, T*>*);
 
 		// 	/* ASSIGN */
