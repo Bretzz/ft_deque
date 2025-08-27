@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 03:35:49 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 12:49:33 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class ft_deque
 		allocator_type			get_allocator() const {return _alloc;}
 
 		/* MEMORY ADDRESS DEBUG */
-		void	print(void) const;
+		void		print(void) const;
 
 		/* Element access */
 		const T&	at(int __idx) const {return (*this)[__idx];}

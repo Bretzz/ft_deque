@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:02:02 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 03:37:22 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 11:17:40 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,30 @@ int	main(void)
 
 	try
 	{
-		// f[4] = -2;
-		f[-1] = -2;
+		f.print();
+		for (size_t i = 0; i < f.size(); ++i)
+		{
+			std::cout << f[i] << " ";
+		}
+		std::cout << std::endl;
+		// f[-1] = -2;
+	}catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+
+	// f.push_back(5);
+	f.pop_front();
+
+	try
+	{
+		f.print();
+		for (size_t i = 0; i < f.size(); ++i)
+		{
+			std::cout << f[i] << " ";
+		}
+		std::cout << std::endl;
+		// f[-1] = -2;
 	}catch (const std::exception& e)
 	{
 		std::cout << e.what() << std::endl;
