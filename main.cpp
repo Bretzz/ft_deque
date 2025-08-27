@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:02:02 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 02:37:16 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 03:37:22 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,15 @@ int	main(void)
 	f.push_back(3);
 	// f.push_back(4);
 	// f.push_back(5);
+
+	try
+	{
+		// f[4] = -2;
+		f[-1] = -2;
+	}catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 
 	std::cout << "front : " << f.front() << ", back : " << f.back() << std::endl;
 

@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 02:45:31 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 03:35:49 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ class ft_deque
 		T&			front(void);
 
 		/* Capacity */
-		bool		empty(void) const {return __size != 0 ? true : false;}
+		bool		empty(void) const {return _size != 0 ? true : false;}
 		size_type	size(void) const {return _size;}
 
 		/* Modifiers */

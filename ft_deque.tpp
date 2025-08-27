@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 02:38:15 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 03:42:45 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -409,17 +409,43 @@ void	ft_deque<T, Allocator>::pop_front(void)
 
 /* the idea is that you just calculate the index with a sum,
 then check if you passed some chunk, if so, jump and repeat */
+/* ! ! ! IMPOROVABLE ! ! !
+too mucch cheks */
 template <typename T, class Allocator>
 T&			ft_deque<T, Allocator>::operator[](int __idx)
 {
-	const long	offset = reinterpret_cast<long>(_front - _base[0]) + 1;
-	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);				/* SGRAVOOOO */
+	if (__idx < 0)
+		throw std::out_of_range("ft_deque::operator[]: negative index");
+
+	long	offset;
+	if (reinterpret_cast<long>(_front - _base[0]) < static_cast<long>(CHUNK * sizeof(T)))
+		offset = reinterpret_cast<long>(_front - _base[0]) + 1;
+	else
+		offset = CHUNK - 1 + reinterpret_cast<long>(_front - _base[1]);
+
+	if (static_cast<unsigned long>((__idx + offset) / CHUNK) > _base.size()
+		|| (static_cast<unsigned long>((__idx + offset) / CHUNK) == _base.size()
+			&& (__idx + offset) % CHUNK + (_base.size() * CHUNK)))
+		throw std::out_of_range("ft_deque::operator[]: out of range");
+	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);		/* SGRAVOOOO */
 }
 
 template <typename T, class Allocator>
 const T&	ft_deque<T, Allocator>::operator[](int __idx) const
 {
-	const long	offset = reinterpret_cast<long>(_front - _base[0]) + 1;
+	if (__idx < 0)
+		throw std::out_of_range("ft_deque::operator[]: negative index");
+
+	long	offset;
+	if (reinterpret_cast<long>(_front - _base[0]) < static_cast<long>(CHUNK * sizeof(T)))
+		offset = reinterpret_cast<long>(_front - _base[0]) + 1;
+	else
+		offset = CHUNK - 1 + reinterpret_cast<long>(_front - _base[1]);
+
+	if (static_cast<unsigned long>((__idx + offset) / CHUNK) > _base.size()
+		|| (static_cast<unsigned long>((__idx + offset) / CHUNK) == _base.size()
+			&& (__idx + offset) % CHUNK + (_base.size() * CHUNK)))
+		throw std::out_of_range("ft_deque::operator[]: out of range");
 	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);
 }
 
