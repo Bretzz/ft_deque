@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_check.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:53:52 by totommi           #+#    #+#             */
-/*   Updated: 2025/08/27 12:10:51 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 14:33:48 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,5 +97,43 @@ int	main(void)
 	}
 
 	f.print();
+
+	d.push_back(c);
+	f.push_back(c); ++c;
+	d.push_back(c);
+	f.push_back(c); ++c;
+
+	d.pop_front();
+	d.pop_front();
+	f.pop_front();
+	f.pop_front();
+
+	f.print();
+
+	/* whole content check */
+	for (size_t i = 0; i < d.size(); ++i)
+	{
+		if (d[i] != f[i])
+			std::cout << "different operator[] at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
+	}
+
+	std::cout << "=== double up ===" << std::endl;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		f.push_front(c);
+		d.push_front(c);
+		++c;
+	}
+
+	f.print();
+
+	/* whole content check */
+	for (size_t i = 0; i < d.size(); ++i)
+	{
+		if (d[i] != f[i])
+			std::cout << "different operator[] at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
+	}
+
 	std::cout << "- main obj : " << c << std::endl;
 }

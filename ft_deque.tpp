@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.tpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 12:48:05 by totommi          ###   ########.fr       */
+/*   Updated: 2025/08/27 16:12:09 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_deque.hpp"
-#include <sys/types.h>
-#include <cmath>
+// #include <sys/types.h>
+#include <cmath>		// std::abs
 
 #include <iostream> /* REMOVE */
+#include <strings.h>	// ::bzero
+#include <algorithm>	// std::find
 
 // static void	bzero(void *ptr, size_type n)
 // {
@@ -39,8 +41,8 @@ void ft_deque<T, Allocator>::print(void) const
 			for (int j = 0; j < CHUNK; ++j)
 			{
 				std::cout << "\tcell[" << j << "] : " << reinterpret_cast<long long>(_base[i] + j) - first << " : ";
-				int	f_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _front)) < static_cast<long>(CHUNK * sizeof(T));
-				int	b_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _back)) < static_cast<long>(CHUNK * sizeof(T));
+				int	f_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _front)) < CHUNK;
+				int	b_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _back)) < CHUNK;
 				if ((b_in_cell && _base[i] + j < _back && !f_in_cell)
 					|| (f_in_cell && _base[i] + j > _front && !b_in_cell)
 					|| (b_in_cell && _base[i] + j < _back && f_in_cell && _base[i] + j > _front))
@@ -57,8 +59,8 @@ void ft_deque<T, Allocator>::print(void) const
 			for (int j = 0; j < CHUNK; ++j)
 			{
 				std::cout << "\tcell[" << j << "] : " << reinterpret_cast<long long>(_base[i] + j) - first << " : ";
-				int	f_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _front)) < static_cast<long>(CHUNK * sizeof(T));
-				int	b_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _back)) < static_cast<long>(CHUNK * sizeof(T));
+				int	f_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _front)) < CHUNK;
+				int	b_in_cell = std::abs(reinterpret_cast<long>(_base[i] - _back)) < CHUNK;
 				if ((b_in_cell && _base[i] + j < _back && !f_in_cell)
 					|| (f_in_cell && _base[i] + j > _front && !b_in_cell)
 					|| (b_in_cell && _base[i] + j < _back && f_in_cell && _base[i] + j > _front))
@@ -283,8 +285,6 @@ T&	ft_deque<T, Allocator>::front(void)
 /* = = = DOUBLE END ACCESS FUNCTIONS = = = */
 /* = = = = = = = = = = = = = = = = = = = = */
 
-#include <algorithm>
-
 /* |0,0,0,0| -> |new|-> |1,2,3,4| */
 /* _base[0] =  */
 
@@ -302,10 +302,15 @@ void	ft_deque<T, Allocator>::push_back(const T &__x)
 	/* ...allocate new one */
 	if (it != _base.end())
 	{
-		T *newcell = _alloc.allocate(CHUNK);
-		::bzero(newcell, CHUNK * sizeof(T));
-		_base.insert(it + 1, newcell);
-		_back = newcell;
+		if (_base.size() > 2 || std::abs(_back - _base[1]) < static_cast<long>(CHUNK))
+		{
+			T *newcell = _alloc.allocate(CHUNK);
+			::bzero(newcell, CHUNK * sizeof(T));
+			_base.insert(it + 1, newcell);
+			_back = newcell;
+		}
+		else
+			_back = *(it + 1);
 	}
 	else
 		++_back;
@@ -362,11 +367,16 @@ void	ft_deque<T, Allocator>::push_front(const T &__x)
 	/* if _front is an element at the 'front' of a cell */
 	if (it != _base.end())
 	{
-		/* allocate new cell */
-		T *newcell = _alloc.allocate(CHUNK);
-		::bzero(newcell, CHUNK * sizeof(T));
-		_base.insert(it, newcell);
-		_front = newcell + (CHUNK -1);
+		if (_base.size() > 2 || std::abs(_front - _base[0]) < static_cast<long>(CHUNK))
+		{
+			/* allocate new cell */
+			T *newcell = _alloc.allocate(CHUNK);
+			::bzero(newcell, CHUNK * sizeof(T));
+			_base.insert(it, newcell);
+			_front = newcell + (CHUNK -1);
+		}
+		else
+			_front = *(it - 1) + (CHUNK - 1);
 	}
 	else
 		--_front;
@@ -398,7 +408,7 @@ void	ft_deque<T, Allocator>::pop_front(void)
 		}
 		else	/* delete the element and jump */
 		{
-			std::cout << "2cells jump destroy" << std::endl;
+			// std::cout << "2cells jump destroy" << std::endl;
 			_front = *(it + 1);
 			// std::cout << "destroying2 " << _front->me() << std::endl;
 			_alloc.destroy(_front);
@@ -433,10 +443,10 @@ T&			ft_deque<T, Allocator>::operator[](int __idx)
 		throw std::out_of_range("ft_deque::operator[]: out of range");
 	
 	long	offset;
-	if (_base.size() == 2 && std::abs(offset = reinterpret_cast<long>(_front - _base[1])) < static_cast<long>(CHUNK * sizeof(T)))
-		offset = CHUNK + offset + 1;
+	if (_base.size() == 2 && std::abs(reinterpret_cast<long>(_back - _front)) < CHUNK)
+		return *(_front + __idx + 1);
 	else
-		offset = reinterpret_cast<long>(_front - _base[0]) + 1;
+		offset = (reinterpret_cast<long>(_front - _base[0]) + 1);
 
 	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);		/* SGRAVOOOO */
 }
@@ -451,12 +461,10 @@ const T&	ft_deque<T, Allocator>::operator[](int __idx) const
 		throw std::out_of_range("ft_deque::operator[]: out of range");
 	
 	long	offset;
-	if (_base.size() == 2 && std::abs(offset = reinterpret_cast<long>(_front - _base[1])) < static_cast<long>(CHUNK * sizeof(T)))
-		offset = CHUNK + offset + 1;
+	if (_base.size() == 2 && std::abs(reinterpret_cast<long>(_back - _front)) < CHUNK)
+		return *(_front + __idx + 1);
 	else
-		offset = reinterpret_cast<long>(_front - _base[0]) + 1;
-
-	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);
+		offset = (reinterpret_cast<long>(_front - _base[0]) + 1);
 }
 
 template <typename T, class Allocator>
