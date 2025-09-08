@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/08 20:57:53 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:00:10 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,9 @@ ft_deque<T, Allocator>::ft_deque(const ft_deque<T, Allocator> &__x)
 
 /* The idea is to call _alloc.deallocate() on each pointer allocated
 with _alloc.allocate(), and call _alloc.destroy() on each element of said
-memory before deallocating */
+memory before deallocating
+#todo destroy elements by order of insertion, regardless if
+it was inserted with push_front of push_back */
 template <typename T, class Allocator>
 ft_deque<T, Allocator>::~ft_deque()
 {
