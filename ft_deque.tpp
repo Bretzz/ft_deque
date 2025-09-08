@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 16:12:09 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/08 20:57:53 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <strings.h>	// ::bzero
 #include <algorithm>	// std::find
 
+#include <stdexcept> //out_of_range
+
 // static void	bzero(void *ptr, size_type n)
 // {
 // 	unsigned char *c_ptr = (unsigned char *)ptr;
@@ -27,6 +29,10 @@
 // 		++c_ptr;
 // 	}
 // }
+
+/* ==================================== */
+/* =========== P R I N T E R ========== */
+/* ==================================== */
 
 template <typename T, class Allocator>
 void ft_deque<T, Allocator>::print(void) const
@@ -250,8 +256,6 @@ void	ft_deque<T, Allocator>::assign(size_type count, const T& value)
 // 		++first;
 // 	}
 // }
-
-#include <stdexcept>
 
 template <typename T, class Allocator>
 T&	ft_deque<T, Allocator>::back(void)

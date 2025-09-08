@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:58:12 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/26 19:58:42 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/08 20:57:38 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,19 @@
 /* ============================ CONSTR & DESTR ============================== */
 /* ========================================================================== */
 
+template <typename T, class Allocator>
+ft_deque<T, Allocator>::iterator::iterator(void)
+{
+	_ptr = NULL;
+	_base = NULL;
+	_size = 0;
+}
 
+template <typename T, class Allocator>
+ft_deque<T, Allocator>::iterator::iterator(std::vector<T*> *base, size_type size)
+{
+	// #todo operator=
+}
 
 /* ========================================================================== */
 /* =============================== METHODS =================================== */
