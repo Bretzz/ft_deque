@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/08 20:56:14 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:01:03 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ incomplete, but im doing my best :D
 
  - check the 'standard container' requierements
  
- - instead of pointers just store (cell,position) of the next slot to insert*/
+ - _front/_back: instead of pointers just store (cell,position) of the next slot to insert*/
 template <typename T, class Allocator = std::allocator<T> >
 class ft_deque
 {
