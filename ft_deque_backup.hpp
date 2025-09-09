@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 12:38:53 by totommi          ###   ########.fr       */
+/*   Updated: 2025/09/08 21:01:03 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,47 +47,14 @@ class ft_deque
 		typedef const value_type&						const_reference;
 		typedef typename allocator_type::pointer		pointer;
 		typedef typename allocator_type::const_pointer	const_pointer;
-
-	/* just a ptr that know the idx of the pointer in a cell of syze _cycle */
-	class cptr
-	{
-		private:
-			T*			_ptr;
-			const int	_cycle;
-			int			_pos;
-
-		public:
-			cptr(int cycle): _ptr(NULL), _cycle(cycle), _pos(0) {}
-			cptr(T* ptr, int cycle): _ptr(ptr), _cycle(cycle), _pos(0) {}
-		
-			/* IMPLICIT CONVERTION */
-			operator T*() const {return _ptr;}
-
-			/* DEREFERENCE */
-			T&	operator*() {return *_ptr;}
-			T*	operator->() const { return _ptr; }
-
-			/* ASSIGN */
-			T&	operator=(T* __x) {_ptr = __x; _pos = 0; return *_ptr;}
-			T&	assign(T* __x, int pos) {_ptr = __x; _pos = pos; return *_ptr;}
-
-			/* OPERATIONS */
-			T&	operator++() {++_ptr; _pos = ++_pos % _cycle; return *_ptr;}
-			T&	operator--() {--_ptr; _pos = --_pos % _cycle; return *_ptr;}
-			T*	operator+(int __idx) {return _ptr + __idx;}
-			T*	operator-(int __idx) {return _ptr - __idx;}
-
-			int			pos(void) {return _pos;}
-			long long	toLongLong() const {return reinterpret_cast<long long>(_ptr);}
-	};
 	
 	private:
 		/* object used to allocate(), destroy() and deallocate() memory. */
 		allocator_type		_alloc;
 		/* pointer to the next free memory slot at the back of the deque */
-		cptr				_back;
+		T*					_back;
 		/* pointer to the next free memory slot at the front of the deque */
-		cptr				_front;
+		T*					_front;
 
 	protected:
 		/* vector of pointers to the single cells of the deque */

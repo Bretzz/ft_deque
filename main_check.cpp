@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_check.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:53:52 by totommi           #+#    #+#             */
-/*   Updated: 2025/08/27 14:33:48 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:06:45 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,14 @@ int	main(void)
 		if (d[i] != f[i])
 			std::cout << "different operator[] at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
 	}
+
+	std::cout << "backs : " << f.back() << ", " << d.back() << std::endl;
+	std::cout << "fronts: " << f.front() << ", " << d.front() << std::endl;
+
+	std::cout << "ft_deque clear()" << std::endl;
+	f.clear();
+	std::cout << "deque clear()" << std::endl;
+	d.clear();
 
 	std::cout << "- main obj : " << c << std::endl;
 }
