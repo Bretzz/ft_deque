@@ -2,7 +2,7 @@ NAME		= ewwww
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 CXX			= c++
 
-SRC			= main_check.cpp
+SRC			= main.cpp
 
 OBJ_DIR 	= obj/
 OBJS 		= $(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))

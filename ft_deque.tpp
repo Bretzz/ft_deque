@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.tpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 13:07:31 by totommi          ###   ########.fr       */
+/*   Updated: 2025/09/09 16:46:16 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,12 +194,8 @@ T&	ft_deque<T, Allocator>::back(void)
 	if (_size == 0)
 		throw std::out_of_range("ft_deque::back(): empty container");
 
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _back);
-	
-	// if (it != _base.end())
 	if (_back.pos() == 0)
-		// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _back);
-		return *(*(std::find(_base.begin(), _base.end(), _back) - 1) + (CHUNK - 1));
+		return *(*(_base.end() - 2) + (CHUNK - 1));
 	else
 		return *(_back - 1);
 }
@@ -210,13 +206,26 @@ T&	ft_deque<T, Allocator>::front(void)
 	if (_size == 0)
 		throw std::out_of_range("ft_deque::front(): empty container");
 
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _front - (CHUNK - 1));
-	
-	// if (it != _base.end())
 	if (_front.pos() == CHUNK - 1)
-		return **(std::find(_base.begin(), _base.end(), _front - (CHUNK - 1)) + 1);
+		return **((_base.begin() + 1));
 	else
 		return *(_front + 1);
+}
+
+/* = = = = = = = = = = = = = = = = = = = = */
+/* = = = = =  ITERATOR FUNCTIONS = = = = = */
+/* = = = = = = = = = = = = = = = = = = = = */
+
+template <typename T, class Allocator>
+typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::begin(void)
+{
+	return ft_deque<T, Allocator>::iterator(&this->front(), &_base, &_size, false);
+}
+
+template <typename T, class Allocator>
+typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::end(void)
+{
+	return ft_deque<T, Allocator>::iterator(&this->back(), &_base, &_size, true);
 }
 
 /* = = = = = = = = = = = = = = = = = = = = */
@@ -229,15 +238,11 @@ T&	ft_deque<T, Allocator>::front(void)
 /* if back puntava all'inizio di una cella */
 /* then alloca some more at the front */
 template <typename T, class Allocator>
-void	ft_deque<T, Allocator>::push_back(const T &__x)
+void	ft_deque<T, Allocator>::push_back(const_reference __x)
 {
 	/* assign value */
 	*_back = __x;
 
-	/* if we are at the end of a cell... */
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _back - (CHUNK - 1));
-
-	// if (it != _base.end())
 	/* if we are at the end of a cell... */
 	if (_back.pos() == CHUNK - 1)
 	{
@@ -263,8 +268,6 @@ void	ft_deque<T, Allocator>::pop_back(void)
 {
 	if (_size == 0)	/* maybe thorw exception */
 		return ;
-
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _back);
 	
 	/* if _back is an element at the front of a cell.. */
 	if (_back.pos() == 0)
@@ -299,12 +302,10 @@ void	ft_deque<T, Allocator>::pop_back(void)
 }
 
 template <typename T, class Allocator>
-void	ft_deque<T, Allocator>::push_front(const T &__x)
+void	ft_deque<T, Allocator>::push_front(const_reference __x)
 {
 	/* assign value */
 	*_front = __x;
-
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _front);
 	
 	/* if _front is an element at the 'front' of a cell */
 	if (_front.pos() == 0)
@@ -330,8 +331,6 @@ void	ft_deque<T, Allocator>::pop_front(void)
 {
 	if (_size == 0)	/* maybe thorw exception */
 		return ;
-
-	// const typename std::vector<T *>::iterator it = std::find(_base.begin(), _base.end(), _front - (CHUNK - 1));
 	
 	/* if _front is an element at the back of a cell.. */
 	if (_front.pos() == CHUNK - 1)

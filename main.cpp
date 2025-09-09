@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:02:02 by topiana-          #+#    #+#             */
-/*   Updated: 2025/08/27 11:17:40 by totommi          ###   ########.fr       */
+/*   Updated: 2025/09/09 16:26:17 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,16 @@ int	main(void)
 	f.assign(10, -1);
 
 	std::cout << "at(5) : " << f.at(5) << std::endl;
+
+	/* iterators */
+	std::cout << "/* ITERATORS */" << std::endl;
+	
+	ft_deque<int>::iterator it = f.begin();
+	while (it != f.end())
+	{
+		std::cout << *it << std::endl;
+		++it;
+	}
 
 	std::cout << "expected " << f.size() << " destructors" << std::endl;
 	return 0;
