@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:53:52 by totommi           #+#    #+#             */
-/*   Updated: 2025/09/09 13:06:45 by totommi          ###   ########.fr       */
+/*   Updated: 2025/09/10 02:51:15 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,69 @@ int	main(void)
 	f.clear();
 	std::cout << "deque clear()" << std::endl;
 	d.clear();
+
+	std::cout << "/* ITERATOR CHECK */" << std::endl;
+
+	for (int i = 0; i < 21; ++i)
+	{
+		f.push_front(c);
+		d.push_front(c);
+		if (d[i] != f[i])
+			std::cout << "different push_front() at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
+		++c;
+	}
+	
+	ft_deque<myClass>::iterator fit = f.begin();
+	std::deque<myClass>::iterator dit = d.begin();
+
+	int i = 0;
+	while (fit != f.end())
+	{
+		if (*fit != *dit)
+			std::cout << "different iterator at i " << i << ", fit = " << *fit << ", dit = " << *dit << std::endl;
+		if (i % 2 == 0)
+			{++fit; ++dit;}
+		else
+			{fit++; dit++;}
+		++i;
+	}
+
+	std::cout << (--fit).base() << std::endl;
+
+	f.clear();
+	d.clear();
+	
+	for (int i = 0; i < 6; ++i)
+	{
+		f.push_front(c);
+		d.push_front(c);
+		if (d[i] != f[i])
+			std::cout << "different push_front() at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
+		++c;
+	}
+
+
+	f.insert(++f.begin(), 42);
+	d.insert(++d.begin(), 42);
+
+	f.insert(f.begin(), 42);
+	d.insert(d.begin(), 42);
+
+	f.insert(--f.end(), 42);
+	d.insert(--d.end(), 42);
+
+	f.insert(f.end(), 42);
+	d.insert(d.end(), 42);
+
+	for (size_t i = 0; i < f.size(); ++i)
+	{
+		std::cout << f[i];
+		if (i != f.size() - 1)
+			std::cout << ", ";
+		if (d[i] != f[i])
+			std::cout << "different isert() at " << i << ", d[" << i << "] = " << d[i] << ", f[" << i << "] = " << f[i] << std::endl;
+	}
+	std::cout << std::endl;
 
 	std::cout << "- main obj : " << c << std::endl;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:14:41 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 16:43:45 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/10 02:32:31 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,44 @@
 # define CHUNK 4	/* number of elements in each cell */
 
 typedef unsigned long uintptr_t;
+
+/* === INDEXD POINTER === */
+
+/* just a ptr that knows how many times it has been incremented
+@param T the type of element we are pointing to*/
+template <typename T>
+class iptr
+{
+	private:
+		T*			_ptr;
+		int			_idx;
+
+	public:
+		iptr(): _ptr(NULL), _idx(0) {}
+		iptr(T* __ptr): _ptr(__ptr), _idx(0) {}
+		iptr(T* __ptr, int __idx): _ptr(__ptr), _idx(__idx) {}
+	
+		/* IMPLICIT CONVERTION */
+		operator T*() const {return _ptr;}
+
+		/* DEREFERENCE */
+		T&	operator*() {return *_ptr;}
+		T*	operator->() const { return _ptr; }
+
+		/* ASSIGNMENT */
+		iptr&	operator=(T* __x) {_ptr = __x; _idx = 0; return *this;}
+		iptr&	operator=(const iptr &__x) {_ptr = __x._ptr; _idx = __x._idx; return *this;}
+		iptr&	assign(T* __x, int idx) {_ptr = __x; _idx = idx; return *this;}
+
+		/* OPERATIONS */
+		iptr&		operator++() {++_ptr; ++_idx; return *this;}
+		iptr&		operator--() {--_ptr; --_idx; return *this;}
+		iptr		operator+(int __idx) {return iptr<T>(_ptr + __idx, _idx + __idx);}
+		iptr		operator-(int __idx) {return iptr<T>(_ptr - __idx, _idx - __idx);}
+
+		int			idx(void) const {return _idx;}
+		long long	toLongLong() const {return reinterpret_cast<long long>(_ptr);}
+};
 
 /* A standard container which offers fixed time access to individual elements in any order.
 
@@ -48,50 +86,15 @@ class ft_deque
 		typedef const value_type&						const_reference;
 		typedef typename allocator_type::pointer		pointer;
 		typedef typename allocator_type::const_pointer	const_pointer;
-
-	/* === INDEXD POINTER === */
-
-	/* just a ptr that know the idx of the pointer in a cell of syze _cycle */
-	class cptr
-	{
-		private:
-			pointer		_ptr;
-			const int	_cycle;
-			int			_pos;
-
-		public:
-			cptr(int cycle): _ptr(NULL), _cycle(cycle), _pos(0) {}
-			cptr(pointer ptr, int cycle): _ptr(ptr), _cycle(cycle), _pos(0) {}
-		
-			/* IMPLICIT CONVERTION */
-			operator T*() const {return _ptr;}
-
-			/* DEREFERENCE */
-			reference	operator*() {return *_ptr;}
-			pointer		operator->() const { return _ptr; }
-
-			/* ASSIGNMENT */
-			reference	operator=(pointer __x) {_ptr = __x; _pos = 0; return *_ptr;}
-			reference	operator=(const cptr &__x) {_ptr = __x._ptr; _pos = __x._pos; return *_ptr;}
-			reference	assign(pointer __x, int pos) {_ptr = __x; _pos = pos; return *_ptr;}
-
-			/* OPERATIONS */
-			reference	operator++() {++_ptr; _pos = ++_pos % _cycle; return *_ptr;}
-			reference	operator--() {--_ptr; _pos = --_pos % _cycle; return *_ptr;}
-			pointer		operator+(int __idx) {return _ptr + __idx;}
-			pointer		operator-(int __idx) {return _ptr - __idx;}
-
-			int			pos(void) const {return _pos;}
-			long long	toLongLong() const {return reinterpret_cast<long long>(_ptr);}
-	};
+		typedef iptr<T>									idx_ptr;
 	
 	private:
 		/* object used to allocate(), destroy() and deallocate() memory. */
 		allocator_type		_alloc;
 		/* pointer to the next free memory slot at the back of the deque */
-		cptr				_back;
+		idx_ptr				_back;
 		/* pointer to the next free memory slot at the front of the deque */
-		cptr				_front;
+		idx_ptr				_front;
 
 	protected:
 		/* vector of pointers to the single cells of the deque */
@@ -115,7 +118,7 @@ class ft_deque
 
 		Description: clear the deque and push_back() size numbers of elem */
 		void					assign(size_type, const_reference);
-		// void					assign(InputIt, InputIt);
+		// void					assign(InputIt, InputIt);				#todo
 		ft_deque<T, Allocator>&	operator=(const ft_deque<T, Allocator>&);
 		allocator_type			get_allocator() const {return _alloc;}
 
@@ -149,8 +152,6 @@ class ft_deque
 		the first two, leaving front/back at the end/beginning
 		of the first/second cell*/
 		void		clear(void);
-		// iterator insert( const_iterator pos, const_reference value );	#todo
-		// iterator erase( iterator pos );									#todo
 		/* @param __x value to add
 
 		Adds an element at the end of the deque, allocating
@@ -185,24 +186,26 @@ class ft_deque
 
 		class iterator
 		{
-			/* ALLOWING ACCES TO private AND public */
+			/* ALLOWING ACCES TO iterator 'private:' AND 'protected:' */
 			public:
 				friend class ft_deque<T, Allocator>;
 
 			private:
-				cptr					_ptr;
+				idx_ptr					_ptr;
 				std::vector<pointer>	*_base;
 				size_type				*_size;
-				bool					_end;
+				idx_ptr					*_front;
+				idx_ptr					*_back;
 			
 			protected:
-				iterator(pointer, std::vector<pointer>*, size_type*, bool);
+				iterator(idx_ptr, std::vector<pointer>*, idx_ptr*, idx_ptr*, size_type*);
+				iterator(pointer, std::vector<pointer>*, idx_ptr*, idx_ptr*, size_type*);
 
 			public:
 
 				/* RAW */
 
-				pointer	base(void) const;
+				pointer	base(void) const {return _ptr;};
 
 				/* CONSTRUCTOR */
 
@@ -219,7 +222,8 @@ class ft_deque
 
 				/* DEREFERENCE */
 
-				reference	operator*(void);
+				reference		operator*(void);
+				const_reference	operator*(void) const;	//cannot modify the content if it's a const iterator
 
 				/* INCR/DECR */
 				iterator&	operator++();		// pre-increment
@@ -231,11 +235,17 @@ class ft_deque
 
 				bool		operator==(const iterator&) const;
 				bool		operator!=(const iterator&) const;
-
 		};
+
+		/* ITERATOR FUNCTIONS */
+
+		typedef const iterator	const_iterator;
 
 		iterator	begin(void);
 		iterator	end(void);
+
+		iterator	insert(const_iterator, const_reference);	// #todo
+		// iterator erase( iterator pos );						// #todo
 };
 
 # include "ft_deque.tpp"

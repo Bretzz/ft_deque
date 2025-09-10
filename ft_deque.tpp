@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque.tpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:56:35 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 16:46:16 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/10 02:53:20 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void ft_deque<T, Allocator>::print(void) const
 
 template <typename T, class Allocator>
 ft_deque<T, Allocator>::ft_deque(void):
-	_alloc(), _back(CHUNK), _front(CHUNK)
+	_alloc()
 {
 	_base.push_back(_alloc.allocate(CHUNK));
 	::bzero(_base[0], CHUNK * sizeof(T));
@@ -148,14 +148,14 @@ void	ft_deque<T, Allocator>::clear(void)
 	}
 	/* clearing cell with _front*/
 	{
-		for (int j = _front.pos() + 1; j < CHUNK; ++j)
+		for (int j = _front.idx() + 1; j < CHUNK; ++j)
 		{
 			_alloc.destroy(_base[0] + j);
 		}
 	}
 	/* clearing cell with _back */
 	{
-		for (int j = 0; j < _back.pos(); ++j)
+		for (int j = 0; j < _back.idx(); ++j)
 		{
 			_alloc.destroy(_base[1] + j);
 		}
@@ -194,7 +194,7 @@ T&	ft_deque<T, Allocator>::back(void)
 	if (_size == 0)
 		throw std::out_of_range("ft_deque::back(): empty container");
 
-	if (_back.pos() == 0)
+	if (_back.idx() == 0)
 		return *(*(_base.end() - 2) + (CHUNK - 1));
 	else
 		return *(_back - 1);
@@ -206,7 +206,7 @@ T&	ft_deque<T, Allocator>::front(void)
 	if (_size == 0)
 		throw std::out_of_range("ft_deque::front(): empty container");
 
-	if (_front.pos() == CHUNK - 1)
+	if (_front.idx() == CHUNK - 1)
 		return **((_base.begin() + 1));
 	else
 		return *(_front + 1);
@@ -219,13 +219,43 @@ T&	ft_deque<T, Allocator>::front(void)
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::begin(void)
 {
-	return ft_deque<T, Allocator>::iterator(&this->front(), &_base, &_size, false);
+	if (_front.idx() == CHUNK - 1)
+		return ft_deque<T, Allocator>::iterator(&this->front(), &_base, &_front, &_back, &_size);
+	else
+		return ft_deque<T, Allocator>::iterator(++idx_ptr(_front), &_base, &_front, &_back, &_size);
 }
 
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::end(void)
 {
-	return ft_deque<T, Allocator>::iterator(&this->back(), &_base, &_size, true);
+	return ft_deque<T, Allocator>::iterator(_back, &_base, &_front, &_back, &_size);
+}
+
+
+/* NOTA: per ora vengono chiamati i distruttori a palla perche' copio
+tutto aggiro :DDDDD, mo pero' si dorme, quindi #todo */
+template <typename T, class Allocator>
+typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::insert(const_iterator __pos, const_reference __value)
+{
+	if (__pos == this->end())
+	{
+		this->push_back(__value);
+		return --this->end();
+	}
+	value_type 							tmp = *__pos;
+	value_type 							next;
+	ft_deque<T, Allocator>::iterator	it = __pos;
+
+	*it = __value;
+
+	while (++it != this->end())
+	{
+		next = (*it);
+		(*it) = tmp;
+		tmp = next;
+	}
+	this->push_back(tmp);
+	return __pos;
 }
 
 /* = = = = = = = = = = = = = = = = = = = = */
@@ -244,7 +274,7 @@ void	ft_deque<T, Allocator>::push_back(const_reference __x)
 	*_back = __x;
 
 	/* if we are at the end of a cell... */
-	if (_back.pos() == CHUNK - 1)
+	if (_back.idx() == CHUNK - 1)
 	{
 		/* and we are at the end of the deque */
 		if (_base.size() > 2 || std::abs(_back - _base[1]) < static_cast<long>(CHUNK))
@@ -270,7 +300,7 @@ void	ft_deque<T, Allocator>::pop_back(void)
 		return ;
 	
 	/* if _back is an element at the front of a cell.. */
-	if (_back.pos() == 0)
+	if (_back.idx() == 0)
 	{
 		const typename std::vector<T *>::iterator	eraser = --_base.end();
 		/* ...and there are more than 2 cells, */
@@ -308,7 +338,7 @@ void	ft_deque<T, Allocator>::push_front(const_reference __x)
 	*_front = __x;
 	
 	/* if _front is an element at the 'front' of a cell */
-	if (_front.pos() == 0)
+	if (_front.idx() == 0)
 	{
 		if (_base.size() > 2 || std::abs(_front - _base[0]) < static_cast<long>(CHUNK))
 		{
@@ -333,7 +363,7 @@ void	ft_deque<T, Allocator>::pop_front(void)
 		return ;
 	
 	/* if _front is an element at the back of a cell.. */
-	if (_front.pos() == CHUNK - 1)
+	if (_front.idx() == CHUNK - 1)
 	{
 		/* ... and there are more than 2 cells, */
 		if (_base.size() > 2)
@@ -387,7 +417,7 @@ T&			ft_deque<T, Allocator>::operator[](int __idx)
 	if (_base.size() == 2 && std::abs(reinterpret_cast<long>(_back - _front)) < CHUNK)
 		return *(_front + __idx + 1);
 	else
-		offset = _front.pos() + 1;
+		offset = _front.idx() + 1;
 
 	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);		/* SGRAVOOOO */
 }
@@ -405,7 +435,7 @@ const T&	ft_deque<T, Allocator>::operator[](int __idx) const
 	if (_base.size() == 2 && std::abs(reinterpret_cast<long>(_back - _front)) < CHUNK)
 		return *(_front + __idx + 1);
 	else
-		offset = _front.pos() + 1;
+		offset = _front.idx() + 1;
 
 	return *(_base[(__idx + offset) / CHUNK] + (__idx + offset) % CHUNK);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_deque_iterator.tpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 19:58:12 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 16:39:12 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/10 02:31:00 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,23 @@ ft_deque<T, Allocator>::iterator::iterator(void)
 }
 
 template <typename T, class Allocator>
-ft_deque<T, Allocator>::iterator::iterator(pointer ptr, std::vector<pointer> *base, size_type *size, bool end):
+ft_deque<T, Allocator>::iterator::iterator(idx_ptr ptr, std::vector<pointer> *base, idx_ptr *front, idx_ptr *back, size_type *size):
+	_ptr(ptr)
+{
+	_base = base;
+	_front = front;
+	_back = back;
+	_size = size;
+}
+
+template <typename T, class Allocator>
+ft_deque<T, Allocator>::iterator::iterator(pointer ptr, std::vector<pointer> *base, idx_ptr *front, idx_ptr *back, size_type *size):
 	_ptr(ptr, CHUNK)
 {
 	_base = base;
+	_front = front;
+	_back = back;
 	_size = size;
-	_end = end;
 }
 
 template <typename T, class Allocator>
@@ -59,15 +70,25 @@ typename ft_deque<T, Allocator>::iterator&	ft_deque<T, Allocator>::iterator::ope
 
 	_ptr = __x._ptr;
 	_base = __x._base;
+	_front = __x._front;
+	_back = __x._back;
 	_size = __x._size;
-	_end = __x._end;
 	return *this;
 }
 
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::reference	ft_deque<T, Allocator>::iterator::operator*(void)
 {
-	if (_end == true)
+	if (_ptr == *_back)
+		throw std::out_of_range("ft_deque::iterator::operator*: end iterator");
+	else
+		return *_ptr;
+}
+
+template <typename T, class Allocator>
+typename ft_deque<T, Allocator>::const_reference	ft_deque<T, Allocator>::iterator::operator*(void) const
+{
+	if (_ptr == *_back)
 		throw std::out_of_range("ft_deque::iterator::operator*: end iterator");
 	else
 		return *_ptr;
@@ -81,19 +102,14 @@ but slows things down */
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator&	ft_deque<T, Allocator>::iterator::operator++()
 {
-	if (_end == true)
+	if (_ptr == *_back)
 		throw std::out_of_range("ft_deque::iterator::operator++: out_of_range");
 
-	if (_ptr.pos() != CHUNK - 1)
-		++_ptr;
+	if (_ptr.idx() != CHUNK - 1)
+		++_ptr;	//just proceed
 	else
-	{
-		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr - _ptr.pos());
-		if (it == --_base->end())
-			_end = true;
-		else
-			_ptr = *(it + 1);
-	}
+		_ptr = *(std::find(_base->begin(), _base->end(), _ptr - _ptr.idx()) + 1); //jumps
+
 	return *this;
 }
 
@@ -101,21 +117,16 @@ typename ft_deque<T, Allocator>::iterator&	ft_deque<T, Allocator>::iterator::ope
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::iterator::operator++(int)
 {
-	ft_deque<T, Allocator>::iterator old = this;
+	ft_deque<T, Allocator>::iterator old = *this;
 
-	if (_end == true)
+	if (_ptr == *_back)
 		throw std::out_of_range("ft_deque::iterator::operator++: out_of_range");
 
-	if (_ptr.pos() != CHUNK - 1)
-		++_ptr;
+	if (_ptr.idx() != CHUNK - 1)
+		++_ptr;	//just proceed
 	else
-	{
-		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr - _ptr.pos());
-		if (it == --_base->end())
-			_end = true;
-		else
-			_ptr = *(it + 1);
-	}
+		_ptr = *(std::find(_base->begin(), _base->end(), _ptr - _ptr.idx()) + 1); //jumps
+
 	return old;
 }
 
@@ -123,15 +134,17 @@ typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::iterator::oper
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator&	ft_deque<T, Allocator>::iterator::operator--()
 {
-	if (_ptr.pos() != 0)
+	if (_ptr.idx() != 0)
 		--_ptr;
 	else
 	{
-		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr.pos());
-		if (it == _base->begin())
-			throw std::out_of_range("ft_deque::iterator::operator--: out of range");
-		_ptr.assign((*_base)[it - 1][(CHUNK - 1)], (CHUNK - 1));
+		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr);
+		_ptr.assign(*(it - 1) + CHUNK - 1, (CHUNK - 1));
 	}
+	
+	if (_ptr == *_front)
+		throw std::out_of_range("ft_deque::iterator::operator--: out_of_range");
+
 	return *this;
 }
 
@@ -139,17 +152,19 @@ typename ft_deque<T, Allocator>::iterator&	ft_deque<T, Allocator>::iterator::ope
 template <typename T, class Allocator>
 typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::iterator::operator--(int)
 {
-	ft_deque<T, Allocator>::iterator old = this;
+	ft_deque<T, Allocator>::iterator old = *this;
 
-	if (_ptr.pos() != 0)
+	if (_ptr.idx() != 0)
 		--_ptr;
 	else
 	{
-		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr.pos());
-		if (it == _base->begin())
-			throw std::out_of_range("ft_deque::iterator::operator--: out of range");
-		_ptr.assign((*_base)[it - 1][(CHUNK - 1)], (CHUNK - 1));
+		typename std::vector<pointer>::iterator it = std::find(_base->begin(), _base->end(), _ptr);
+		_ptr.assign(*(it - 1) + CHUNK - 1, (CHUNK - 1));
 	}
+	
+	if (_ptr == *_front)
+		throw std::out_of_range("ft_deque::iterator::operator--: out_of_range");
+
 	return old;
 }
 
@@ -157,7 +172,7 @@ typename ft_deque<T, Allocator>::iterator	ft_deque<T, Allocator>::iterator::oper
 template <typename T, class Allocator>
 bool		ft_deque<T, Allocator>::iterator::operator==(const iterator &__x) const
 {
-	if (_ptr == __x._ptr && _end == __x._end)
+	if (_ptr == __x._ptr)
 		return true;
 	else
 		return false;
@@ -166,7 +181,7 @@ bool		ft_deque<T, Allocator>::iterator::operator==(const iterator &__x) const
 template <typename T, class Allocator>
 bool		ft_deque<T, Allocator>::iterator::operator!=(const iterator &__x) const
 {
-	if (_ptr != __x._ptr || _end != __x._end)
+	if (_ptr != __x._ptr)
 		return true;
 	else
 		return false;

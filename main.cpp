@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:02:02 by topiana-          #+#    #+#             */
-/*   Updated: 2025/09/09 16:26:17 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/09/09 22:17:30 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,15 +78,34 @@ int	main(void)
 
 	std::cout << "at(5) : " << f.at(5) << std::endl;
 
+	f.clear();
+	for (int i = 0; i < 11; ++i)
+	{
+		if (i % 2 == 0)
+			f.push_back(i);
+		else
+			f.push_front(i);
+	}
+
 	/* iterators */
 	std::cout << "/* ITERATORS */" << std::endl;
-	
+	f.print();
+
+	std::cout << "forward" << std::endl;
 	ft_deque<int>::iterator it = f.begin();
 	while (it != f.end())
 	{
 		std::cout << *it << std::endl;
 		++it;
 	}
+
+	std::cout << "backward" << std::endl;
+	do
+	{
+		it--;
+		std::cout << *it << std::endl;
+	}
+	while (it != f.begin());
 
 	std::cout << "expected " << f.size() << " destructors" << std::endl;
 	return 0;
